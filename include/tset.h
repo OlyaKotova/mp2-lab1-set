@@ -13,18 +13,21 @@
 class TSet
 {
 private:
-  int MaxPower;       // максимальная мощность множества
-  TBitField BitField; // битовое поле для хранения характеристического вектора
+  int MaxPower;			// максимальная мощность множества
+  TBitField BitField;	// битовое поле для хранения характеристического вектора
+  
 public:
-  TSet(int mp);
-  TSet(const TSet &s);       // конструктор копирования
-  TSet(const TBitField &bf); // конструктор преобразования типа
-  operator TBitField();      // преобразование типа к битовому полю
+	TSet(int mp=100): BitField(mp), MaxPower(mp) {};
+	TSet(const TSet &s);		// конструктор копирования
+	TSet(const TBitField &bf);	// конструктор преобразования типа
+	operator TBitField();		// преобразование типа к битовому полю
+
   // доступ к битам
   int GetMaxPower(void) const;     // максимальная мощность множества
   void InsElem(const int Elem);       // включить элемент в множество
   void DelElem(const int Elem);       // удалить элемент из множества
   int IsMember(const int Elem) const; // проверить наличие элемента в множестве
+
   // теоретико-множественные операции
   int operator== (const TSet &s) const; // сравнение
   int operator!= (const TSet &s) const; // сравнение
