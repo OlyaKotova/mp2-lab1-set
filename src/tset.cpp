@@ -7,32 +7,32 @@
 
 #include "tset.h"
 
-TSet::TSet(int mp) : BitField(-1)
+TSet::TSet(int mp) : BitField(mp)
 {
+	MaxPower=mp;
 }
 
 // конструктор копирования
-TSet::TSet(const TSet &s) : BitField(-1)
+TSet::TSet(const TSet &s) : BitField(s.BitField)
 {
-	//size = bf.size;
-	//mas = new TELEM[size];
-	//for(int i = 0; i<size; i++)
-	//mas[i] = bf.mas[i];
+	MaxPower=s.MaxPower;
 }
 
 // конструктор преобразования типа
-TSet::TSet(const TBitField &_bf) : BitField(-1)
+TSet::TSet(const TBitField &_bf) : BitField(bf)
 {
-	BitField=_bf;
-	MaxPower=BitField.GetLength();
+	MaxPower = bf.GetLength();
 }
 
 TSet::operator TBitField()
 {
+	TBitField tmp(this->BitField);
+	return tmp;
 }
 
 int TSet::GetMaxPower(void) const // получить макс. к-во эл-тов
 {
+	return MaxPower;
 }
 
 int TSet::IsMember(const int Elem) const // элемент множества?
@@ -54,15 +54,19 @@ void TSet::DelElem(const int Elem) // исключение элемента мн
 
 TSet& TSet::operator=(const TSet &s) // присваивание
 {
+	MaxPower = s.GetMaxPower();
+	BitField = s.BitField;
+	return *this;
 }
 
 int TSet::operator==(const TSet &s) const // сравнение
 {
-    return 0;
+    return BitField == s.BitField;
 }
 
 int TSet::operator!=(const TSet &s) const // сравнение
 {
+	return BitField != s.BitField;
 }
 
 TSet TSet::operator+(const TSet &s) // объединение
@@ -75,26 +79,36 @@ TSet TSet::operator+(const TSet &s) // объединение
 
 TSet TSet::operator+(const TSet &Elem) // объединение с элементом
 {
+	TSet tmp(*this);
+	tmp.BitField.SetBit(Elem);
+	return tmp;
 }
 
 TSet TSet::operator-(const int Elem) // разность с элементом
 {
+	TSet tmp(*this);
+	tmp.BitField.ClrBit(Elem);
+	return tmp;
 }
 
 TSet TSet::operator*(const TSet &s) // пересечение
 {
+	TSet tmp(BitField & s.BitField);
+	return tmp;
 }
 
 TSet TSet::operator~(void) // дополнение
 {
+	TSet tmp(~BitField);
+	return tmp;
 }
 
 // перегрузка ввода/вывода
 
-istream &operator>>(istream &istr, TSet &s) // ввод
+istream &operator>>(istream &istr, TSet &s) // ввод 
 {
 	int i=0; istr>>i;
-	while ((i>0)&&(i<s.MaxPower))
+	while ((i>0)&&(i<s.MaxPower))  // Сделать с запятыми!!!
 	{
 		s.InsElem(i);
 		istr>>i;
@@ -106,10 +120,16 @@ istream &operator>>(istream &istr, TSet &s) // ввод
 ostream& operator<<(ostream &ostr, const TSet &s) // вывод
 {
 	int i=0; ostr<<i;
+	char ch=' ';
 	while ((i>0)&&(i<s.MaxPower))
-	{
-		//s.InsElem(i);
-		ostr<<i;
+		{
+		if (s.IsMember(i))
+			{
+			ostr << ch << i;
+			ch = ',';
+			}
+		}
+	ostr << '}';
 		return (ostr);
 	}
 }
